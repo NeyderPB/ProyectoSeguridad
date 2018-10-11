@@ -1,0 +1,16 @@
+
+<h1><%= @tarea.titulo %></h1>
+<p><%= @tarea.descripcion %></p>
+<% unless @tarea.usuario.nil? %>
+	<p>Escrito por - <%="#{@tarea.usuario.email}"%></p>
+	<% end %>
+<h3>Agregar Comentario</h3>
+
+<%= render "comentarios/form" %>
+
+<h3>Comentarios</h3>
+<ul>
+	<% @tarea.comentarios.each do |comentario|%>
+		<li><%="#{comentario.contenido} - #{comentario.usuario.email}"%></li>
+	<%end%>
+</ul>

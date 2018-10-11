@@ -1,0 +1,6 @@
+bundle install
+rake db:setup
+rails generate mailer TareaMailer notify
+rails generate delayed_job:active_record
+
+rake jobs:workoff

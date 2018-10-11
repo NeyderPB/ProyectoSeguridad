@@ -1,0 +1,77 @@
+rails new mi_api-api //para construir un nuevo proyecto en el escritorio
+gem 'rack-cors' //utilizar esta gema
+gem 'bcrypt', '~> 3.1.7'
+gem 'knock'
+gem 'active_model_serializers', '~> 0.10.0'
+_______________________________________
+cd mi_api
+bundle install
+rails db:migrate
+rails generate scaffold User name:string email:string password_digest:string
+rake db:migrate
+rails generate knock:install
+rails generate knock:token_controller user
+___________________________________
+//en la carpeta models/concerns/user.rb
+class User < ApplicationRecord
+	has_secure_password
+
+	VALID_EMAIL_REGEX = /\A([\w+\-].?)+@[a-z]+[a-z\d\-]+(\.[a-z]+)*\.[a-z]+\z/i
+	validates :name, presence:true
+	validate  :email, presence:true, length: {maximum: 255}, 
+        format: {with: VALID_EMAIL_REGEX}, uniqueness: {case__sensitive: false}
+
+        validates :password, presence:true, length: {minimum: 8}, allow_nil: true
+
+        private
+
+        def downcase_email
+        	self.email.downcase!
+        end
+end
+__________________________
+//en plicacion_controller
+class ApplicationController < ActionController::API
+
+	include knock::Autenticable
+end
+____________________________
+//en user_controller
+class UsersController < ApplicationController
+  before_action authenticate_user, only: [:show]
+
+
+....
+
+def user_params
+      params.require(:user).permit(:name, :email, :password, :password_confirmation)
+    end
+_________________________
+//habilitar cors
+Rails.application.config.middleware.insert_before 0, Rack::Cors do
+   allow do
+     origins 'example.com'
+
+     resource '*',
+       headers: :any,
+       methods: [:get, :post, :put, :patch, :delete, :options, :head]
+   end
+ end
+_______________
+//user_serialzer
+class UserSerializer < ActiveModel::Serializer
+  attributes :id, :name, :email
+end
+_____________
+agregar plugin a chrome 
+Advanced REST client o descargar desde https://www.getpostman.com/apps
+_________________
+en metodo get
+{"user":{"name":"Neyder","email":"neiderpiedrahita@hotmail.com","password":"12345678","password_confirmation":"12345678"}}
+____________________
+en metodo post
+localhost:3000/user_token
+{"auth":{"email":"neiderpiedrahita@hotmail.com","password":"12345678"}}
+______
+eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJleHAiOjE1MzQwNDA2MjcsInN1YiI6MX0.REeuI1Nf2mWQPKrESryTYtdGecMYYGqrxV55vdBLeMQ
+

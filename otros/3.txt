@@ -1,0 +1,27 @@
+ <thead>
+    <tr>
+      <th scope="col">#</th>
+      <th scope="col">Título de la Denuncia</th>
+      <th scope="col">Editar Denuncia</th>
+      <th scope="col">Eliminar Denuncia</th>
+    </tr>
+  </thead>
+  <tbody>
+  	<% @tareas.each do |tarea| %>
+    <tr> 
+      	<th scope="row">
+			<%= tarea.id %> 
+		</th>     	
+      	<td>
+			<%= link_to "#{tarea.titulo}", tarea %> 
+		</td>
+  		<td><% @tareas.each do |tarea|%>
+			<%= link_to "Editar", edit_tarea_path(tarea) %> 
+		</td>
+		<td>      	
+		<%= link_to "Eliminar", tarea, method: :delete, data: {confirm: 'Estas seguro?'} %> 
+		</td>
+    </tr>
+    <% end %>
+  </tbody>
+</table>
